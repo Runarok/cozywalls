@@ -1,6 +1,9 @@
-# CozyWalls
+# cozyWalls
 
 A cozy, minimal front-end for browsing wallpapers.
+
+🌐 **Live demo:**
+👉 [https://runarok.github.io/cozywalls/](https://runarok.github.io/cozywalls/)
 
 ## What it is
 
@@ -15,7 +18,8 @@ Used a bit of AI to scaffold the UI, then tweaked things by hand until it felt r
 
 ## Tech
 
-* Plain HTML / CSS / JavaScript (or whatever’s in the repo)
+* Plain HTML / CSS / JavaScript
+* No heavy frameworks, just what’s needed
 
 ## Getting started
 
@@ -24,13 +28,26 @@ git clone https://github.com/Runarok/cozywalls.git
 cd cozywalls
 ```
 
-* If there’s a build setup: `npm install && npm start`
-* Otherwise: open `index.html` or use a simple static server
+* If there’s a build setup:
 
-## Credits & license
+  ```bash
+  npm install && npm start
+  ```
+* Otherwise, open `index.html` directly or use a simple static server
 
-* Fork of the original CozyWalls project (full credit to original authors)
-* UI/text: AI-assisted + human tweaks
+## Previews
+
+![Cozy Trip](./Cozywalls/cozy-trip.jpg)
+
+![Christmas Night](./Cozywalls/christmas-night-cartoon.jpg)
+
+![Cozy Indoor Garden Dark](./Cozywalls/green-indoor-garden.jpg)
+
+![Flying Thing](./Cozywalls/sky-flying-thing.jpeg)
+
+## Credits & License
+
+* Fork of the [original CozyWalls project](https://github.com/leanghok120/cozywalls) (full credit to the [original author](https://github.com/leanghok120))
+* UI & text: AI-assisted + human tweaks
 
 ---
-
