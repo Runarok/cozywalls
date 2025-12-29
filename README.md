@@ -1,18 +1,36 @@
-# Aesthetic Cozy Wallpapers
+# CozyWalls
 
-My collection of high quality cozy wallpapers. I found these wallpapers from [Pinterest](https://pinterest.com) by searching "Desktop Wallpapers" and then I resized and upscaled the images.
+A cozy, minimal front-end for browsing wallpapers.
 
-### Installation
+## What it is
 
-- Linux: `git clone --depth=1 git@github.com:leanghok120/Cozy-Walls.git ~/Pictures/walls`
-- Windows: Idk
+* A laid-back fork of the original CozyWalls project
+* Adds a clean, user-friendly UI for previewing wallpapers
+* Simple, practical, and easy on the eyes
 
-### Previews
+## Why
 
-![Cozy Trip](./cozy-trip.jpg)
+I was bored, found the repo, and thought it deserved a nicer front-end.
+Used a bit of AI to scaffold the UI, then tweaked things by hand until it felt right.
 
-![Christmas Night](./christmas-night-cartoon.jpg)
+## Tech
 
-![Cozy Indoor Garden Dark](./green-indoor-garden.jpg)
+* Plain HTML / CSS / JavaScript (or whatever’s in the repo)
 
-![Flying Thing](./sky-flying-thing.jpeg)
+## Getting started
+
+```bash
+git clone https://github.com/Runarok/cozywalls.git
+cd cozywalls
+```
+
+* If there’s a build setup: `npm install && npm start`
+* Otherwise: open `index.html` or use a simple static server
+
+## Credits & license
+
+* Fork of the original CozyWalls project (full credit to original authors)
+* UI/text: AI-assisted + human tweaks
+
+---
+
