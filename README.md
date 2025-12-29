@@ -1,4 +1,4 @@
-# cozyWalls
+# cozywalls
 
 A cozy, minimal front-end for browsing wallpapers.
 
