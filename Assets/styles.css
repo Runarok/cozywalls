@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+
+:root {
+    --bg-deep: #0a0b12;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --accent: #3b82f6;
+    --sidebar-w: 280px;
+    --sidebar-collapsed-w: 4px;
+}
+
+body {
+    background: radial-gradient(circle at top left, #1a1b2e, #0a0b12);
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.glass {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+}
+
+/* Sidebar logic */
+#sidebar {
+    width: var(--sidebar-w);
+    transform: translateX(calc(-100% + var(--sidebar-collapsed-w)));
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 50;
+}
+
+/* Mouse trigger zone - Enhanced for discovery */
+#sidebar::after {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+}
+
+#sidebar:hover {
+    transform: translateX(0);
+}
+
+#sidebar .nav-label {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+}
+
+#sidebar:hover .nav-label {
+    opacity: 1;
+}
+
+/* Hide scrollbar but allow scrolling */
+html {
+    scrollbar-width: none;        /* Firefox */
+}
+
+html::-webkit-scrollbar {
+    width: 0px;                   /* Chrome, Edge, Safari */
+    background: transparent;
+}
+
+/* Added Tutorial Overlay styles */
+#tutorial {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#tutorial.active {
+    display: flex;
+    opacity: 1;
+}
+
+.tutorial-content {
+    background: rgba(10, 11, 18, 0.8);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Tooltip style */
+.tooltip {
+    position: relative;
+}
+
+.tooltip::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-10px);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 60;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+}
+
+@media (max-width: 768px) {
+    .tooltip::after { display: none; }
+}
+
+/* Grid Item */
+.wp-item {
+    transition: all 0.5s ease;
+    cursor: zoom-in;
+}
+
+.wp-item:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.wp-item img {
+    opacity: 0.7;
+    transition: all 0.7s ease;
+}
+
+.wp-item:hover img {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Modal */
+#modal {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.control-btn:active {
+    transform: scale(0.9);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* Grid adjustments for better spacing */
+#grid {
+    padding: 0;
+    transition: padding 0.4s ease;
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cozywalls | Wallpaper Gallery</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+        <link rel="icon" href="Assets/Favicon.png" type="image/png">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="Assets/styles.css">
+    </head>
+    <body class="antialiased">
+        <!-- Tutorial Overlay -->
+        <div id="tutorial" class="fixed inset-0 z-[200] flex items-center justify-center p-6">
+            <div class="tutorial-content max-w-md w-full p-10 rounded-[2rem] text-center space-y-8 shadow-2xl">
+                <div class="space-y-4">
+                    <h2 class="text-4xl font-extralight tracking-tight text-white/90 italic">Discovery Awaits</h2>
+                    <p class="text-white/40 font-light leading-relaxed">
+                        Hover your cursor near the
+                        <span class="text-blue-400 font-medium">left edge</span>
+                        of the screen to reveal hidden controls and collection tools.
+                    </p>
+                </div>
+                <button id="close-tutorial" class="w-full py-4 glass rounded-2xl text-sm uppercase tracking-[0.2em] font-medium text-white/60 hover:text-white hover:bg-white/10 transition-all">Enter Gallery</button>
+            </div>
+        </div>
+        <!-- Overlay (for mobile/tablet discovery) -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 opacity-0 pointer-events-none z-40 transition-opacity duration-500">
+        </div>
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 h-full glass z-50 p-6 flex flex-col gap-12 shadow-2xl">
+            <div class="space-y-1">
+                <h1 class="text-3xl font-light tracking-tight text-white/90 italic">Cozywalls</h1>
+                <p class="text-[10px] uppercase tracking-widest text-white/40 font-medium">Gallery Experience</p>
+            </div>
+            <div class="space-y-8">
+                <div class="space-y-3">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-white/40 uppercase tracking-wider">Collection</span>
+                        <span id="count-total" class="text-white/80">0</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-white/40 uppercase tracking-wider">Status</span>
+                        <span class="text-blue-400 font-medium">Live Sync</span>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-2">
+                    <button class="tooltip w-full flex items-center gap-6 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all group" data-tip="Switch to Grid Layout">
+                        <i class="fas fa-th-large text-blue-500 w-5 text-center group-hover:scale-110 transition-transform">
+                        </i>
+                        <span class="nav-label text-sm font-light tracking-wide">Grid View</span>
+                    </button>
+                    <button id="refresh-btn" class="tooltip w-full flex items-center gap-6 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all group" data-tip="Fetch Latest Wallpapers">
+                        <i class="fas fa-sync-alt text-blue-500 w-5 text-center group-hover:scale-110 transition-transform">
+                        </i>
+                        <span class="nav-label text-sm font-light tracking-wide">Refresh</span>
+                    </button>
+                    <button id="download-all-btn" class="tooltip w-full flex items-center gap-6 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all group" data-tip="Download Collection">
+                        <i class="fas fa-download text-blue-500 w-5 text-center group-hover:scale-110 transition-transform">
+                        </i>
+                        <span class="nav-label text-sm font-light tracking-wide">Download All</span>
+                    </button>
+                </nav>
+            </div>
+            <!-- Footer -->
+            <div class="mt-auto pt-8 border-t border-white/5 space-y-4">
+                <div class="space-y-2">
+                    <a href="https://github.com/Runarok/cozywalls" target="_blank" class="flex items-center gap-3 text-[10px] text-white/40 hover:text-white/80 transition-colors uppercase tracking-widest group">
+                        <i class="fab fa-github text-sm group-hover:scale-110 transition-transform">
+                        </i>
+                        <span>Repo Hosted</span>
+                    </a>
+                    <a href="https://github.com/leanghok120/cozywalls" target="_blank" class="flex items-center gap-3 text-[10px] text-white/40 hover:text-white/80 transition-colors uppercase tracking-widest group">
+                        <i class="fas fa-code-branch text-sm group-hover:scale-110 transition-transform">
+                        </i>
+                        <span>Fork of Original</span>
+                    </a>
+                </div>
+                <div class="opacity-30 text-[9px] uppercase tracking-[0.3em]">Curated Minimalist Spaces</div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="px-6 py-12 md:px-12 lg:px-16 w-full max-w-[2000px] mx-auto">
+            <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Images will be injected here -->
+            </div>
+        </main>
+        <!-- Modal Viewer -->
+        <div id="modal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center p-6 md:p-12">
+            <button id="close-modal" class="absolute top-8 right-8 text-white/30 hover:text-white transition-colors p-2 text-2xl">
+                <i class="fas fa-times">
+                </i>
+            </button>
+            <div class="relative w-full max-w-6xl aspect-video flex items-center justify-center">
+                <img id="modal-img" src="/placeholder.svg" alt="Wallpaper" class="w-full h-full object-contain shadow-2xl rounded-sm">
+                <!-- Arrows -->
+                <button id="prev-btn" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 md:-translate-x-24 text-white/20 hover:text-white transition-all hover:scale-110 text-5xl font-thin">
+                    <i class="fas fa-chevron-left">
+                    </i>
+                </button>
+                <button id="next-btn" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 md:translate-x-24 text-white/20 hover:text-white transition-all hover:scale-110 text-5xl font-thin">
+                    <i class="fas fa-chevron-right">
+                    </i>
+                </button>
+            </div>
+            <!-- Controls -->
+            <div class="mt-12 flex items-center gap-6 px-8 py-3 glass rounded-full">
+                <button id="modal-prev" class="control-btn p-3 rounded-full text-white/60 hover:text-white">
+                    <i class="fas fa-chevron-left">
+                    </i>
+                </button>
+                <div class="w-px h-6 bg-white/10">
+                </div>
+                <button id="shuffle-btn" class="control-btn p-3 rounded-full text-white/60 hover:text-white">
+                    <i class="fas fa-random">
+                    </i>
+                </button>
+                <div class="w-px h-6 bg-white/10">
+                </div>
+                <button id="download-btn" class="control-btn p-3 rounded-full text-white/60 hover:text-white">
+                    <i class="fas fa-arrow-down">
+                    </i>
+                </button>
+                <div class="w-px h-6 bg-white/10">
+                </div>
+                <button id="modal-next" class="control-btn p-3 rounded-full text-white/60 hover:text-white">
+                    <i class="fas fa-chevron-right">
+                    </i>
+                </button>
+            </div>
+            <div id="modal-info" class="mt-8 text-white/30 text-[10px] uppercase tracking-[0.2em] font-light">Loading...</div>
+        </div>
+        <script src="Assets/script.js">
+        </script>
+    </body>
+</html>
