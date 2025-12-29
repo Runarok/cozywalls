@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozywalls Gallery</title>
+    <style>
+        :root {
+            --color-bg: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+            --color-bg-solid: #0f1419;
+            --color-text: #e5e7eb;
+            --color-text-secondary: #9ca3af;
+            --color-glass: rgba(255, 255, 255, 0.05);
+            --color-glass-hover: rgba(255, 255, 255, 0.1);
+            --color-accent: #3b82f6;
+            --color-accent-dark: #1e40af;
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-sidebar-bg: rgba(30, 41, 59, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: var(--color-sidebar-bg);
+            border-right: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            gap: 24px;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .sidebar.closed {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--color-glass);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .menu-toggle:hover {
+            background: var(--color-glass-hover);
+        }
+
+        .sidebar {
+            width: 240px;
+            background: var(--color-sidebar-bg);
+            border-right: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            gap: 24px;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .sidebar.closed {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--color-glass);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .menu-toggle:hover {
+            background: var(--color-glass-hover);
+            border-color: var(--color-accent);
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--color-glass);
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: var(--color-glass-hover);
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        .stat-label {
+            color: var(--color-text-secondary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-top: 4px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mode-btn {
+            padding: 10px 12px;
+            background: var(--color-glass);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-btn:hover {
+            background: var(--color-glass-hover);
+        }
+
+        .mode-btn.active {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            color: white;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            margin-bottom: 8px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mode-btn:hover .tooltip {
+            opacity: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .viewer-mode {
+            display: flex;
+            gap: 8px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--color-border);
+            align-items: center;
+            background: var(--color-glass);
+            backdrop-filter: blur(10px);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 2px;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+            overflow-y: auto;
+            background: var(--color-bg-solid);
+        }
+
+        .image-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            aspect-ratio: 1;
+            background: var(--color-glass);
+        }
+
+        .image-card:hover {
+            border-color: var(--color-accent);
+            box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.1);
+        }
+
+        .image-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover .image-container img {
+            transform: scale(1.05);
+        }
+
+        .image-info {
+            display: none;
+        }
+
+        .image-name {
+            display: none;
+        }
+
+        .image-actions {
+            display: none;
+        }
+
+        .action-btn {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 20, 25, 0.8);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.15s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 12px;
+            background: var(--color-sidebar-bg);
+            padding: 0;
+            position: relative;
+            border: 1px solid var(--color-border);
+            animation: slideUp 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .modal-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: center;
+            padding: 0 16px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--color-text);
+            background: var(--color-glass);
+            border: 1px solid var(--color-border);
+            padding: 6px 10px;
+            width: auto;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            backdrop-filter: blur(5px);
+        }
+
+        .close-btn:hover {
+            background: var(--color-glass-hover);
+        }
+
+        .fullscreen-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-bg-solid);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            gap: 0;
+        }
+
+        .fullscreen-viewer.show {
+            display: flex;
+        }
+
+        .fullscreen-viewer img {
+            max-width: 100%;
+            max-height: 85%;
+            border-radius: 0;
+        }
+
+        .fullscreen-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 20px 24px;
+            border-top: 1px solid var(--color-border);
+            width: 100%;
+            justify-content: center;
+            background: var(--color-glass);
+            backdrop-filter: blur(10px);
+        }
+
+        .counter {
+            background: var(--color-glass);
+            padding: 6px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        button {
+            padding: 10px 16px;
+            background: var(--color-glass);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        button:hover {
+            background: var(--color-glass-hover);
+            border-color: var(--color-accent);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--color-glass);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-glass-hover);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-text);
+            opacity: 0.5;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--color-text);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            border: 3px solid var(--color-border);
+            border-top: 3px solid var(--color-accent);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .header h1 {
+                font-size: 1rem;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 240px;
+                height: 100vh;
+                z-index: 1000;
+                border-right: 1px solid var(--color-border);
+            }
+
+            .main-content {
+                width: 100%;
+                margin-top: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .mode-btn {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="header">
+                <h1>Cozywalls</h1>
+                <p>Gallery</p>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="displayCount">0</div>
+                    <div class="stat-label">Loaded</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="mode-btn active" onclick="switchMode('grid')">
+                    <span class="tooltip">Grid View</span>
+                    Grid
+                </button>
+                <button class="mode-btn" onclick="downloadAll()">
+                    <span class="tooltip">Download All Images</span>
+                    Download All
+                </button>
+                <button class="mode-btn" onclick="refreshImages()">
+                    <span class="tooltip">Check for New Images</span>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="viewer-mode">
+                <span style="color: var(--color-text-secondary); font-size: 0.85rem;">Browse images</span>
+            </div>
+            <div id="gallery" class="gallery"></div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📁</div>
+                <p>No images found.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <img id="modalImage" class="modal-image" src="" alt="">
+            <div class="modal-controls">
+                <button class="btn-secondary" onclick="previousImage()">⬅️ Previous</button>
+                <button onclick="downloadImage()">⬇️ Download</button>
+                <button class="btn-secondary" onclick="shuffleCurrentImage()">🔀 Shuffle</button>
+                <button class="btn-secondary" onclick="nextImage()">Next ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fullscreenViewer" class="fullscreen-viewer">
+        <button class="close-btn" onclick="exitFullscreen()" style="position: fixed; top: 20px; right: 30px; z-index: 1001;">&times;</button>
+        <img id="fullscreenImage" src="" alt="">
+        <div class="fullscreen-controls">
+            <button class="btn-secondary" onclick="previousImage()">⬅️ Previous</button>
+            <div class="counter">
+                <span id="imageCounter">1</span> / <span id="imageTotal">1</span>
+            </div>
+            <button class="btn-secondary" onclick="nextImage()">Next ➡️</button>
+            <button class="btn-secondary" onclick="downloadImage()">⬇️ Download</button>
+        </div>
+    </div>
+
+    <script>
+        let allImages = [];
+        let filteredImages = [];
+        let currentMode = 'grid';
+        let currentImageIndex = 0;
+        let currentImageUrl = '';
+        const STORAGE_KEY = 'cozywalls_images';
+        const STORAGE_TIMESTAMP = 'cozywalls_timestamp';
+
+        async function loadImages(forceRefresh = false) {
+            const gallery = document.getElementById('gallery');
+            
+            // Check local storage
+            const cached = localStorage.getItem(STORAGE_KEY);
+            const cachedTime = localStorage.getItem(STORAGE_TIMESTAMP);
+            const now = Date.now();
+            const cacheAge = cachedTime ? now - parseInt(cachedTime) : null;
+
+            if (cached && !forceRefresh && cacheAge && cacheAge < 3600000) {
+                // Use cached data if less than 1 hour old
+                allImages = JSON.parse(cached);
+                filteredImages = [...allImages];
+                updateStats();
+                renderGallery();
+                return;
+            }
+
+            gallery.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            try {
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
+                const apiUrl = 'https://api.github.com/repos/Runarok/cozywalls/contents/Cozywalls';
+
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to load images');
+                }
+
+                const contents = await response.json();
+
+                if (!Array.isArray(contents)) {
+                    throw new Error('Invalid response');
+                }
+
+                allImages = contents
+                    .filter(item => {
+                        const isImage = imageExtensions.some(ext => item.name.toLowerCase().endsWith(ext));
+                        return item.type === 'file' && isImage;
+                    })
+                    .map(item => ({
+                        name: item.name,
+                        url: item.download_url,
+                        htmlUrl: item.html_url
+                    }));
+
+                // Save to local storage
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(allImages));
+                localStorage.setItem(STORAGE_TIMESTAMP, now.toString());
+
+                filteredImages = [...allImages];
+
+                updateStats();
+                renderGallery();
+
+                if (allImages.length === 0) {
+                    gallery.innerHTML = '';
+                    document.getElementById('emptyState').style.display = 'block';
+                }
+            } catch (error) {
+                gallery.innerHTML = '';
+                document.getElementById('emptyState').style.display = 'block';
+                console.error('Error:', error);
+            }
+        }
+
+        function refreshImages() {
+            loadImages(true);
+        }
+
+        loadImages();
+
+        function renderGallery() {
+            const gallery = document.getElementById('gallery');
+            document.getElementById('emptyState').style.display = 'none';
+
+            if (currentMode === 'grid') {
+                gallery.innerHTML = filteredImages.map((img, idx) => `
+                    <div class="image-card" onclick="openModal('${img.url}')">
+                        <div class="image-container">
+                            <img src="${img.url}" alt="${img.name}" loading="lazy">
+                        </div>
+                    </div>
+                `).join('');
+            } else if (currentMode === 'slideshow') {
+                gallery.innerHTML = '';
+                startSlideshow();
+            } else if (currentMode === 'single') {
+                gallery.innerHTML = '';
+                showSingleView();
+            }
+        }
+
+        function openModal(imageUrl) {
+            currentImageUrl = imageUrl;
+            document.getElementById('modalImage').src = imageUrl;
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+            closeSidebar();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('closed');
+            overlay.classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.add('closed');
+            overlay.classList.remove('show');
+        }
+
+        function shuffleCurrentImage() {
+            if (filteredImages.length === 0) return;
+            currentImageIndex = Math.floor(Math.random() * filteredImages.length);
+            const img = filteredImages[currentImageIndex];
+            document.getElementById('modalImage').src = img.url;
+            currentImageUrl = img.url;
+        }
+
+        function showSingleView() {
+            if (filteredImages.length === 0) return;
+
+            currentImageIndex = 0;
+            enterFullscreen();
+        }
+
+        function enterFullscreen() {
+            if (filteredImages.length === 0) return;
+
+            const viewer = document.getElementById('fullscreenViewer');
+            const img = document.getElementById('fullscreenImage');
+            const counter = document.getElementById('imageCounter');
+            const total = document.getElementById('imageTotal');
+
+            img.src = filteredImages[currentImageIndex].url;
+            currentImageUrl = filteredImages[currentImageIndex].url;
+            counter.textContent = currentImageIndex + 1;
+            total.textContent = filteredImages.length;
+
+            viewer.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function exitFullscreen() {
+            document.getElementById('fullscreenViewer').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function nextImage() {
+            if (filteredImages.length === 0) return;
+            currentImageIndex = (currentImageIndex + 1) % filteredImages.length;
+            enterFullscreen();
+        }
+
+        function previousImage() {
+            if (filteredImages.length === 0) return;
+            currentImageIndex = (currentImageIndex - 1 + filteredImages.length) % filteredImages.length;
+            enterFullscreen();
+        }
+
+        function startSlideshow() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+
+            if (filteredImages.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            window.currentSlideIndex = 0;
+            window.slideshowInterval = null;
+
+            const showSlide = () => {
+                const img = filteredImages[window.currentSlideIndex];
+                gallery.innerHTML = `
+                    <div style="width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center;">
+                        <img src="${img.url}" alt="${img.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                `;
+            };
+
+            showSlide();
+
+            window.nextSlide = () => {
+                window.currentSlideIndex = (window.currentSlideIndex + 1) % filteredImages.length;
+                showSlide();
+            };
+
+            window.previousSlide = () => {
+                window.currentSlideIndex = (window.currentSlideIndex - 1 + filteredImages.length) % filteredImages.length;
+                showSlide();
+            };
+
+            window.slideshowInterval = setInterval(() => {
+                window.currentSlideIndex = (window.currentSlideIndex + 1) % filteredImages.length;
+                showSlide();
+            }, 4000);
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (window.slideshowInterval) {
+                clearInterval(window.slideshowInterval);
+                window.slideshowInterval = null;
+            }
+
+            if (document.getElementById('fullscreenViewer').classList.contains('show')) {
+                exitFullscreen();
+            }
+
+            renderGallery();
+        }
+
+        function shuffleImages() {
+            filteredImages = [...filteredImages].sort(() => Math.random() - 0.5);
+            renderGallery();
+        }
+
+        function downloadSingle(url, filename) {
+            downloadImageFromUrl(url, filename);
+        }
+
+        function downloadImage() {
+            if (currentImageUrl) {
+                const filename = filteredImages[currentImageIndex]?.name || 'image.jpg';
+                downloadImageFromUrl(currentImageUrl, filename);
+            }
+        }
+
+        function downloadImageFromUrl(url, filename) {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                })
+                .catch(error => {
+                    console.error('Download error:', error);
+                    window.open(url, '_blank');
+                });
+        }
+
+        function downloadAll() {
+            if (filteredImages.length === 0) {
+                alert('No images to download');
+                return;
+            }
+
+            alert(`Downloading ${filteredImages.length} images. Your browser will start multiple downloads.`);
+
+            filteredImages.forEach((img, idx) => {
+                setTimeout(() => {
+                    downloadImageFromUrl(img.url, img.name);
+                }, idx * 300);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('totalCount').textContent = allImages.length;
+            document.getElementById('displayCount').textContent = filteredImages.length;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('modal');
+            if (modal.classList.contains('show')) {
+                if (e.key === 'ArrowRight') nextImage();
+                if (e.key === 'ArrowLeft') previousImage();
+                if (e.key === 'Escape') closeModal();
+            }
+        });
+
+        // Click outside modal to close
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') closeModal();
+        });
+
+        // Close button fix
+        document.querySelector('.close-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeModal();
+        });
+    </script>
+</body>
+</html>
